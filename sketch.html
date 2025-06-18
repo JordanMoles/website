@@ -1,70 +1,88 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Attracteurs de Lorenz</title>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
-  </head>
-  <body style="margin:0">
-    <script>
-      let sigma = 10;
-      let rho = 28;
-      let beta = 8 / 3;
-      let dt = 0.01;
-      let maxPoints = 100;
+<head>
+  <meta charset="UTF-8" />
+  <title>Attracteurs de Lorenz</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    let sigma = 10;
+    let rho = 28;
+    let beta = 8 / 3;
+    let dt = 0.01;
+    let maxPoints = 100;
 
-      let attractors = [];
-      let num = 10;
+    let attractors = [];
+    let num = 10;
 
-      function setup() {
-        createCanvas(600, 400, WEBGL);
-        for (let i = 0; i < num; i++) {
-          let initCond = (i + 1) * 0.05;
-          let c = color((i + 1) / num * 255, 100, 255);
-          attractors[i] = new Attractor(initCond, initCond, initCond, c);
-        }
+    function setup() {
+      let canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+      canvas.position(0, 0);
+      
+      for (let i = 0; i < num; i++) {
+        let initCond = (i + 1) * 0.05;
+        let c = color((i + 1) / num * 255, 100, 255);
+        attractors[i] = new Attractor(initCond, initCond, initCond, c);
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    function draw() {
+      background(30);
+      orbitControl();
+      scale(5);
+      for (let i = 0; i < num; i++) {
+        attractors[i].update();
+        attractors[i].display();
+      }
+    }
+
+    class Attractor {
+      constructor(x, y, z, col) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.history = [];
+        this.col = col;
       }
 
-      function draw() {
-        background(30);
-        orbitControl();
-        scale(5);
-        for (let i = 0; i < num; i++) {
-          attractors[i].update();
-          attractors[i].display();
-        }
+      update() {
+        let dx = sigma * (this.y - this.x);
+        let dy = this.x * (rho - this.z) - this.y;
+        let dz = this.x * this.y - beta * this.z;
+        this.x += dx * dt;
+        this.y += dy * dt;
+        this.z += dz * dt;
+        this.history.push(createVector(this.x, this.y, this.z));
+        if (this.history.length > maxPoints) this.history.shift();
       }
 
-      class Attractor {
-        constructor(x, y, z, col) {
-          this.x = x;
-          this.y = y;
-          this.z = z;
-          this.history = [];
-          this.col = col;
+      display() {
+        noFill();
+        stroke(this.col);
+        beginShape();
+        for (let v of this.history) {
+          vertex(v.x, v.y, v.z);
         }
-
-        update() {
-          let dx = sigma * (this.y - this.x);
-          let dy = this.x * (rho - this.z) - this.y;
-          let dz = this.x * this.y - beta * this.z;
-          this.x += dx * dt;
-          this.y += dy * dt;
-          this.z += dz * dt;
-          this.history.push(createVector(this.x, this.y, this.z));
-          if (this.history.length > maxPoints) this.history.shift();
-        }
-
-        display() {
-          noFill();
-          stroke(this.col);
-          beginShape();
-          for (let v of this.history) {
-            vertex(v.x, v.y, v.z);
-          }
-          endShape();
-        }
+        endShape();
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
 </html>

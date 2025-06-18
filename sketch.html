@@ -1,19 +1,25 @@
-<!-- Fichier : sketch.html -->
 <!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>p5.js Attractors</title>
+    <title>Attracteurs de Lorenz - p5.js</title>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #1e1e1e;
+      }
+    </style>
   </head>
-  <body style="margin:0">
+  <body>
     <script>
       let sigma = 10, rho = 28, beta = 8/3;
       let dt = 0.01, maxPoints = 100;
       let attractors = [], num = 10;
 
       function setup() {
-        createCanvas(600, 400, WEBGL);
+        createCanvas(windowWidth, windowHeight, WEBGL);
         for (let i = 0; i < num; i++) {
           let initCond = (i + 1) * 0.05;
           let c = color((i + 1) / num * 255, 100, 255);
@@ -55,9 +61,15 @@
           noFill();
           stroke(this.col);
           beginShape();
-          for (let v of this.history) vertex(v.x, v.y, v.z);
+          for (let v of this.history) {
+            vertex(v.x, v.y, v.z);
+          }
           endShape();
         }
+      }
+
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
       }
     </script>
   </body>

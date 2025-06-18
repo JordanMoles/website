@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Attracteurs de Lorenz - Points Blancs</title>
+    <title>Attracteurs de Lorenz</title>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
   </head>
   <body style="margin:0">
@@ -11,10 +11,10 @@
       let rho = 28;
       let beta = 8 / 3;
       let dt = 0.01;
-      let maxPoints = 200;
+      let maxPoints = 100;
 
       let attractors = [];
-      let num = 20;
+      let num = 10;
 
       function setup() {
         createCanvas(600, 400, WEBGL);
@@ -29,21 +29,9 @@
         background(30);
         orbitControl();
         scale(5);
-
         for (let i = 0; i < num; i++) {
           attractors[i].update();
           attractors[i].display();
-
-          // Affiche le point blanc qui suit la dernière position
-          push();
-          noStroke();
-          fill(255);
-          let lastPos = attractors[i].history[attractors[i].history.length - 1];
-          if (lastPos) {
-            translate(lastPos.x, lastPos.y, lastPos.z);
-            sphere(0.2);
-          }
-          pop();
         }
       }
 
@@ -60,11 +48,9 @@
           let dx = sigma * (this.y - this.x);
           let dy = this.x * (rho - this.z) - this.y;
           let dz = this.x * this.y - beta * this.z;
-
           this.x += dx * dt;
           this.y += dy * dt;
           this.z += dz * dt;
-
           this.history.push(createVector(this.x, this.y, this.z));
           if (this.history.length > maxPoints) this.history.shift();
         }
